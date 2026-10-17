@@ -1,62 +1,78 @@
-# Paper Plugin Template
+# Invisible Item Frames
 
-A minimal, production-ready template for Paper Minecraft plugins using Gradle Kotlin DSL.
+A Paper 1.20.6 plugin that turns dropped item frames invisible when they are splashed with an invisibility potion. Pick up the converted frame and place it — the placed frame is invisible while still holding its item.
 
-## Quick Start
+> **Status:** the repository is in early development. The public branch currently contains the plugin scaffold; the Maven implementation is being prepared for release.
 
-1. **Rename the plugin:**
-   - [ ] `settings.gradle.kts` → change `rootProject.name`
-   - [ ] `build.gradle.kts` → change `group`
-   - [ ] `gradle.properties` → change `plugin_version`, `plugin_author`
-   - [ ] `src/main/resources/plugin.yml` → update `name`, `main`, `description`, `author`, commands, permissions
-   - [ ] Rename package `com.example.template` → your own package
+## Planned behavior
 
-2. **Set up Gradle wrapper:**
-   ```bash
-   gradle wrapper
-   ```
+- Splash and lingering invisibility potions convert nearby dropped item frames
+- Supports normal and glow item frames
+- Converting preserves the stack amount
+- Configurable splash radius, glow-frame support, lingering support, and player notifications
+- Permission `invisibleitemframes.use` (default: true)
+- Works by adding the `entity_data` component `{ id: "minecraft:item_frame", Invisible: 1 }` to the dropped item
 
-3. **Build:**
-   ```bash
-   ./gradlew build
-   ```
-   Output JAR will be at `build/libs/<PluginName>-<version>.jar`.
+## Requirements
 
-4. **Test locally:**
-   Drop the JAR into a Paper 1.21.x server's `plugins/` folder.
-
-## What's Included
-
-| Feature | Detail |
+| Requirement | Version |
 |---|---|
-| Build system | Gradle 8.10+ (Kotlin DSL) |
-| API | Paper 1.21.4 (paperweight-userdev) |
-| Java | 21 (toolchain) |
-| Packaging | Shadow JAR |
-| CI | GitHub Actions — build on push/PR |
-| Config | Auto-saved `config.yml` |
-| Plugin metadata | `plugin.yml` with Gradle template expansion |
+| Server | Paper 1.20.6 |
+| Java | 17+ to build (Paper 1.20.6 servers run on Java 21) |
+| Build | Maven |
 
-## Dependencies
+> The implementation uses NMS reflection against the Paper 1.20.6 mappings (`v1_20_R4`). It is not expected to work unchanged on other Minecraft versions.
 
-Add compileOnly dependencies in `build.gradle.kts` and their repositories:
+## Build
 
-```kotlin
-repositories {
-    maven("https://jitpack.io")
-}
-
-dependencies {
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
-}
+```bash
+mvn package
 ```
 
-## Project Structure
+The plugin JAR is written to `target/invisible-item-frames-<version>.jar`.
 
+## Usage
+
+1. Put the JAR into the server's `plugins/` directory.
+2. Start the server to generate `plugins/InvisibleItemFrames/config.yml`.
+3. Drop one or more item frames on the ground.
+4. Throw a splash or lingering potion of Invisibility at them.
+5. Pick up the converted frames and place them — they will be invisible.
+
+## Configuration
+
+```yaml
+# Search radius around the potion impact point
+splash-radius: 3.0
+
+# Allow converting glow item frames
+allow-glow-variant: true
+
+# Allow lingering potions to trigger conversion
+allow-lingering-potions: true
+
+# Notify the thrower after a successful conversion
+notify-player: true
 ```
-src/main/java/com/example/template/
-└── TemplatePlugin.java       # Main plugin class
+
+## Permissions
+
+| Permission | Default | Description |
+|---|---|---|
+| `invisibleitemframes.use` | `true` | Use invisibility potions to convert item frames |
+
+## Project layout
+
+```text
+pom.xml
+src/main/java/com/ohtoai/invisibleitemframes/
+├── InvisibleItemFrames.java
+└── listener/PotionSplashListener.java
 src/main/resources/
-├── plugin.yml                # Plugin descriptor (template-expanded)
-└── config.yml                # Default configuration
+├── config.yml
+└── plugin.yml
 ```
+
+## License
+
+No license file is currently included in this repository.
